@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoHub | Educational Cryptography Lab</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --error: #ef4444;
+            --border: #334155;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        select, input[type="number"] {
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent);
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-color);
+            color: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            resize: vertical;
+            outline: none;
+        }
+
+        textarea:focus { border-color: var(--accent); }
+        textarea::placeholder { color: #475569; }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 0.9rem;
+            min-height: 1.5rem;
+        }
+
+        .info-card {
+            grid-column: 1 / -1;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1rem;
+        }
+
+        .info-card h3 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .caesar-controls {
+            display: none; /* Hidden by default */
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .app-grid { grid-template-columns: 1fr; }
+        }
+	/* Footer / Copyright Styles */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding-bottom: 1rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; transition: 0.2s; }
+        footer a:hover { color: var(--accent-hover); text-decoration: underline; }
+        .copyright-details {
+            display: flex; justify-content: center; gap: 1.5rem; margin-top: 0.75rem; flex-wrap: wrap;
+        }
+        .copyright-details span { display: flex; align-items: center; gap: 0.4rem; }
+
+        @media (max-width: 900px) { .app-grid.active { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>CryptoHub</h1>
+        <p>Convert and explore cryptographic algorithms and data encodings instantly.</p>
+    </header>
+
+    <div class="app-grid">
+        <!-- Input Panel -->
+        <div class="panel">
+            <div class="controls">
+                <label for="input-type">From:</label>
+                <select id="input-type">
+                    <option value="plain">Plain Text</option>
+                    <option value="base64">Base64</option>
+                    <option value="hex">Hexadecimal</option>
+                    <option value="binary">Binary</option>
+                    <option value="caesar">Caesar Cipher</option>
+                </select>
+                <div class="caesar-controls" id="input-caesar-shift-container">
+                    <label>Shift:</label>
+                    <input type="number" id="input-caesar-shift" value="3" min="1" max="25" style="width: 60px;">
+                </div>
+            </div>
+            <textarea id="input-text" placeholder="Type or paste your data here..."></textarea>
+            <div class="error-msg" id="input-error"></div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel">
+            <div class="controls">
+                <label for="output-type">To:</label>
+                <select id="output-type">
+                    <option value="base64">Base64</option>
+                    <option value="hex">Hexadecimal</option>
+                    <option value="binary">Binary</option>
+                    <option value="caesar">Caesar Cipher</option>
+                    <option value="plain">Plain Text</option>
+                </select>
+                <div class="caesar-controls" id="output-caesar-shift-container">
+                    <label>Shift:</label>
+                    <input type="number" id="output-caesar-shift" value="3" min="1" max="25" style="width: 60px;">
+                </div>
+            </div>
+            <textarea id="output-text" placeholder="Output will appear here..." readonly></textarea>
+            <div class="error-msg" id="output-error"></div>
+        </div>
+
+        <!-- Educational Information Panel -->
+        <div class="info-card" id="info-panel">
+            <h3 id="info-title">Select an algorithm to learn more</h3>
+            <p id="info-desc">Information about the selected target encoding or cipher will appear here.</p>
+        </div>
+    </div>
+</div>
+<!-- ================= FOOTER / COPYRIGHT ================= -->
+    <footer>
+        <p>&copy; 2026 Ahmed Al Ghafri. All rights reserved.</p>
+        <div class="copyright-details">
+            <span>📷 Instagram: <a href="https://instagram.com/3.rart" target="_blank">@3.rart</a></span>
+            <span>📧 Email: <a href="mailto:76j2214@utas.edu.om">76j2214@utas.edu.om</a></span>
+            <span>📞 Phone: <a href="tel:+96872047006">+968 72047006</a></span>
+        </div>
+    </footer>
+<script>
+    // --- Dictionary for Educational Information ---
+    const educationalInfo = {
+        plain: {
+            title: "Plain Text (UTF-8)",
+            desc: "The standard readable format for human text. UTF-8 encodes standard characters as well as international symbols and emojis into bytes that computers can process."
+        },
+        base64: {
+            title: "Base64 Encoding",
+            desc: "Base64 is NOT encryption; it is an encoding scheme. It takes binary data and translates it into a string of 64 standard printable ASCII characters (A-Z, a-z, 0-9, +, /). It is commonly used to embed images in HTML or attach files to emails safely."
+        },
+        hex: {
+            title: "Hexadecimal (Base-16)",
+            desc: "A numeral system made of 16 symbols: 0-9 and A-F. Programmers love Hex because exactly two hex digits represent one full byte of data (8 bits). It is frequently used to represent memory addresses, colors in CSS, and hashed values."
+        },
+        binary: {
+            title: "Binary (Base-2)",
+            desc: "The fundamental language of computers. Everything digitally stored ultimately breaks down to binary—a series of 1s (on) and 0s (off), representing the physical electrical states of transistors inside a processor."
+        },
+        caesar: {
+            title: "Caesar Cipher (Substitution Cipher)",
+            desc: "One of the oldest known encryption techniques, famously used by Julius Caesar. It \"shifts\" every letter in the alphabet by a fixed number. While historically significant, it is incredibly weak today because it can be easily cracked using frequency analysis or brute force."
+        }
+    };
+
+    // --- Core Cryptography Logic ---
+    
+    function applyCaesar(text, shift) {
+        return text.replace(/[a-zA-Z]/g, function(c) {
+            const base = c <= 'Z' ? 65 : 97;
+            // Handle negative shifts correctly in JS
+            return String.fromCharCode(((c.charCodeAt(0) - base + shift) % 26 + 26) % 26 + base);
+        });
+    }
+
+    // Step 1: Convert anything TO Plain Text
+    function decodeToPlain(text, type, shift) {
+        if (!text) return '';
+        try {
+            switch(type) {
+                case 'plain': return text;
+                case 'base64': 
+                    // Decode btoa while supporting Unicode
+                    return decodeURIComponent(atob(text).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                case 'hex': 
+                    let hexClean = text.replace(/\s+/g, '');
+                    if (hexClean.length % 2 !== 0) throw new Error("Invalid hex length");
+                    let str = '';
+                    for (let i = 0; i < hexClean.length; i += 2) {
+                        str += '%' + hexClean.substr(i, 2);
+                    }
+                    return decodeURIComponent(str);
+                case 'binary': 
+                    let binTokens = text.trim().split(/\s+/);
+                    return binTokens.map(b => {
+                        if(!/^[01]+$/.test(b)) throw new Error("Invalid binary");
+                        return String.fromCharCode(parseInt(b, 2));
+                    }).join('');
+                case 'caesar': 
+                    // To decode Caesar, shift backwards
+                    return applyCaesar(text, -shift);
+                default: return text;
+            }
+        } catch (e) {
+            throw new Error(`Cannot decode valid ${type} from input.`);
+        }
+    }
+
+    // Step 2: Convert Plain Text TO Target Type
+    function encodeFromPlain(text, type, shift) {
+        if (!text) return '';
+        switch(type) {
+            case 'plain': return text;
+            case 'base64': 
+                return btoa(encodeURIComponent(text).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                }));
+            case 'hex': 
+                return Array.from(new TextEncoder().encode(text))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join(' ');
+            case 'binary': 
+                return Array.from(new TextEncoder().encode(text))
+                    .map(b => b.toString(2).padStart(8, '0'))
+                    .join(' ');
+            case 'caesar': 
+                return applyCaesar(text, shift);
+            default: return text;
+        }
+    }
+
+    // --- UI Interaction and Event Listeners ---
+    
+    const ui = {
+        inType: document.getElementById('input-type'),
+        inText: document.getElementById('input-text'),
+        inShift: document.getElementById('input-caesar-shift'),
+        inShiftContainer: document.getElementById('input-caesar-shift-container'),
+        inError: document.getElementById('input-error'),
+        
+        outType: document.getElementById('output-type'),
+        outText: document.getElementById('output-text'),
+        outShift: document.getElementById('output-caesar-shift'),
+        outShiftContainer: document.getElementById('output-caesar-shift-container'),
+        
+        infoTitle: document.getElementById('info-title'),
+        infoDesc: document.getElementById('info-desc')
+    };
+
+    function updateUI() {
+        // Toggle Caesar shift inputs based on dropdowns
+        ui.inShiftContainer.style.display = ui.inType.value === 'caesar' ? 'flex' : 'none';
+        ui.outShiftContainer.style.display = ui.outType.value === 'caesar' ? 'flex' : 'none';
+
+        // Update educational info panel based on Output type
+        const info = educationalInfo[ui.outType.value];
+        ui.infoTitle.textContent = info.title;
+        ui.infoDesc.textContent = info.desc;
+
+        processConversion();
+    }
+
+    function processConversion() {
+        ui.inError.textContent = ''; // Clear previous errors
+        const rawInput = ui.inText.value;
+        if (!rawInput) {
+            ui.outText.value = '';
+            return;
+        }
+
+        try {
+            // "Any to Any" conversion relies on Plain Text as the middleman
+            const inShiftVal = parseInt(ui.inShift.value) || 0;
+            const plainText = decodeToPlain(rawInput, ui.inType.value, inShiftVal);
+            
+            const outShiftVal = parseInt(ui.outShift.value) || 0;
+            const result = encodeFromPlain(plainText, ui.outType.value, outShiftVal);
+            
+            ui.outText.value = result;
+        } catch (err) {
+            ui.outText.value = '';
+            ui.inError.textContent = err.message;
+        }
+    }
+
+    // Attach listeners
+    [ui.inType, ui.inText, ui.inShift, ui.outType, ui.outShift].forEach(el => {
+        el.addEventListener('input', updateUI);
+    });
+
+    // Initialize layout on page load
+    updateUI();
+
+</script>
+</body>
+</html>
