@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CryptoHub | Educational Cryptography Lab</title>
+    <title>CryptoHub</title>
+    
+    <!-- كود الأيقونة (إيموجي) 👇 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔐</text></svg>">
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -127,7 +131,7 @@
         @media (max-width: 768px) {
             .app-grid { grid-template-columns: 1fr; }
         }
-	/* Footer / Copyright Styles */
+        
         footer {
             text-align: center;
             margin-top: 3rem;
@@ -203,17 +207,17 @@
         </div>
     </div>
 </div>
-<!-- ================= FOOTER / COPYRIGHT ================= -->
-    <footer>
-        <p>&copy; 2026 Ahmed Al Ghafri. All rights reserved.</p>
-        <div class="copyright-details">
-            <span>📷 Instagram: <a href="https://instagram.com/3.rarx" target="_blank">@3.rarx</a></span>
-            <span>📧 Email: <a href="mailto:76j2214@utas.edu.om">76j2214@utas.edu.om</a></span>
-            <span>📞 Phone: <a href="tel:+96872047006">+968 72047006</a></span>
-        </div>
-    </footer>
+
+<footer>
+    <p>&copy; 2026 Ahmed Al Ghafri.</p>
+    <div class="copyright-details">
+        <span>📷 Instagram: <a href="https://instagram.com/3.rart" target="_blank">@3.rart</a></span>
+        <span>📧 Email: <a href="mailto:76j2214@utas.edu.om">76j2214@utas.edu.om</a></span>
+        <span>📞 Phone: <a href="tel:+96872047006">+968 72047006</a></span>
+    </div>
+</footer>
+
 <script>
-    // --- Dictionary for Educational Information ---
     const educationalInfo = {
         plain: {
             title: "Plain Text (UTF-8)",
@@ -237,24 +241,19 @@
         }
     };
 
-    // --- Core Cryptography Logic ---
-    
     function applyCaesar(text, shift) {
         return text.replace(/[a-zA-Z]/g, function(c) {
             const base = c <= 'Z' ? 65 : 97;
-            // Handle negative shifts correctly in JS
             return String.fromCharCode(((c.charCodeAt(0) - base + shift) % 26 + 26) % 26 + base);
         });
     }
 
-    // Step 1: Convert anything TO Plain Text
     function decodeToPlain(text, type, shift) {
         if (!text) return '';
         try {
             switch(type) {
                 case 'plain': return text;
                 case 'base64': 
-                    // Decode btoa while supporting Unicode
                     return decodeURIComponent(atob(text).split('').map(function(c) {
                         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
                     }).join(''));
@@ -273,7 +272,6 @@
                         return String.fromCharCode(parseInt(b, 2));
                     }).join('');
                 case 'caesar': 
-                    // To decode Caesar, shift backwards
                     return applyCaesar(text, -shift);
                 default: return text;
             }
@@ -282,7 +280,6 @@
         }
     }
 
-    // Step 2: Convert Plain Text TO Target Type
     function encodeFromPlain(text, type, shift) {
         if (!text) return '';
         switch(type) {
@@ -305,8 +302,6 @@
         }
     }
 
-    // --- UI Interaction and Event Listeners ---
-    
     const ui = {
         inType: document.getElementById('input-type'),
         inText: document.getElementById('input-text'),
@@ -324,11 +319,9 @@
     };
 
     function updateUI() {
-        // Toggle Caesar shift inputs based on dropdowns
         ui.inShiftContainer.style.display = ui.inType.value === 'caesar' ? 'flex' : 'none';
         ui.outShiftContainer.style.display = ui.outType.value === 'caesar' ? 'flex' : 'none';
 
-        // Update educational info panel based on Output type
         const info = educationalInfo[ui.outType.value];
         ui.infoTitle.textContent = info.title;
         ui.infoDesc.textContent = info.desc;
@@ -337,7 +330,7 @@
     }
 
     function processConversion() {
-        ui.inError.textContent = ''; // Clear previous errors
+        ui.inError.textContent = '';
         const rawInput = ui.inText.value;
         if (!rawInput) {
             ui.outText.value = '';
@@ -345,7 +338,6 @@
         }
 
         try {
-            // "Any to Any" conversion relies on Plain Text as the middleman
             const inShiftVal = parseInt(ui.inShift.value) || 0;
             const plainText = decodeToPlain(rawInput, ui.inType.value, inShiftVal);
             
@@ -359,14 +351,11 @@
         }
     }
 
-    // Attach listeners
     [ui.inType, ui.inText, ui.inShift, ui.outType, ui.outShift].forEach(el => {
         el.addEventListener('input', updateUI);
     });
 
-    // Initialize layout on page load
     updateUI();
-
 </script>
 </body>
 </html>
